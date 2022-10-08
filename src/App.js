@@ -38,7 +38,7 @@ function App() {
       event.stopPropagation();
       return;
     }
-    // reglar expressoin
+    // reglar expressoin for password validation
     if (!/(?=.*?[#?!@$%^&*-])/.test(password)) {
       setError('Password should contain at least one special character ')
       return;
@@ -51,11 +51,16 @@ function App() {
       .then(userCredential => {
         const user = userCredential.user;
         setUser(user)
-        console.log(user)
+
+        // register button e click korle input field empty hoye jabe
+        setEmail('')
+        setPassword('')
       })
       .catch(error => {
         console.error(error)
       })
+
+    // page reload hobe na
     event.preventDefault();
   }
 
@@ -90,7 +95,7 @@ function App() {
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
           </Form.Group>
           <Button variant="primary" type="submit">
-            Submit
+            Register
           </Button>
         </Form>
       </div>
