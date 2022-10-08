@@ -12,12 +12,11 @@ import { useState } from 'react';
 const auth = getAuth(app)
 
 function App() {
-  const [user, setUser] = useState({});
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
   const [validated, setValidated] = useState(false);
   const [error, setError] = useState('');
+  const [registered, setRegistered] = useState(false)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
 
   const handleEmailBlur = (event) => {
@@ -30,6 +29,12 @@ function App() {
   }
 
 
+  // for checkbox
+  const handleRegisteredChange = (event) => {
+    setRegistered(event.target.checked);
+  }
+
+  // For register button
   const handleFormSubmit = (event) => {
     event.preventDefault();
 
@@ -50,26 +55,28 @@ function App() {
     createUserWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
         const user = userCredential.user;
-        setUser(user)
-
+        console.log(user)
         // register button e click korle input field empty hoye jabe
         setEmail('')
         setPassword('')
       })
       .catch(error => {
+        setError(error.message)
         console.error(error)
       })
+
 
     // page reload hobe na
     event.preventDefault();
   }
 
 
+
   return (
     <div>
 
       <div className='registration w-50 mx-auto mt-5'>
-        <h2 className='text-primary'>Please Register!!</h2>
+        <h2 className='text-primary'>Please {registered ? "Login" : "Register"}</h2>
         <Form noValidate validated={validated} onSubmit={handleFormSubmit}>
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email address</Form.Label>
@@ -88,14 +95,17 @@ function App() {
             <Form.Control.Feedback type="invalid">
               Please provide a valid password.
             </Form.Control.Feedback>
-            <p className='text-danger'>{error}</p>
+
           </Form.Group>
 
+          <Form.Check onChange={handleRegisteredChange} type="checkbox" label="Already registered?" />
+
+          <p className='text-danger'>{error}</p>
 
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
           </Form.Group>
           <Button variant="primary" type="submit">
-            Register
+            {registered ? "Login" : "Register"}
           </Button>
         </Form>
       </div>
