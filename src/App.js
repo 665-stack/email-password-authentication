@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import app from './firebase.init';
 import { useState } from 'react';
 
@@ -52,18 +52,35 @@ function App() {
     setValidated(true);
     setError('');
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(userCredential => {
-        const user = userCredential.user;
-        console.log(user)
-        // register button e click korle input field empty hoye jabe
-        setEmail('')
-        setPassword('')
-      })
-      .catch(error => {
-        setError(error.message)
-        console.error(error)
-      })
+
+    // jodi user age thekei registered thake taile login hobe
+    if (registered) {
+      signInWithEmailAndPassword(auth, email, password)
+        .then(result => {
+          const user = result.user
+          console.log(user)
+        })
+        .catch(error => {
+          console.error(error);
+          setError(error.message)
+        })
+
+    }
+    // age theke registered na thakle register hobe
+    else {
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(userCredential => {
+          const user = userCredential.user;
+          console.log(user)
+          // register button e click korle input field empty hoye jabe
+          setEmail('')
+          setPassword('')
+        })
+        .catch(error => {
+          setError(error.message)
+          console.error(error)
+        })
+    }
 
 
     // page reload hobe na
