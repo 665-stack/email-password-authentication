@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 
-import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import app from './firebase.init';
 import { useState } from 'react';
 
@@ -55,6 +55,7 @@ function App() {
 
     // jodi user age thekei registered thake taile login hobe
     if (registered) {
+      console.log(email, password);
       signInWithEmailAndPassword(auth, email, password)
         .then(result => {
           const user = result.user
@@ -73,8 +74,9 @@ function App() {
           const user = userCredential.user;
           console.log(user)
           // register button e click korle input field empty hoye jabe
-          setEmail('')
-          setPassword('')
+
+          verifyEmail();
+
         })
         .catch(error => {
           setError(error.message)
@@ -87,7 +89,20 @@ function App() {
     event.preventDefault();
   }
 
+  const handlePasswordReset = () => {
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        console.log("Password reset email sent!")
+      })
 
+  }
+  const verifyEmail = () => {
+    sendEmailVerification(auth.currentUser)
+      .then(() => {
+        console.log("Email verification sent!");
+      })
+
+  }
 
   return (
     <div>
@@ -121,6 +136,8 @@ function App() {
 
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
           </Form.Group>
+          <Button onClick={handlePasswordReset} variant="link">Forget Password?</Button>
+          <br />
           <Button variant="primary" type="submit">
             {registered ? "Login" : "Register"}
           </Button>
