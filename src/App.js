@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button';
 
-import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import app from './firebase.init';
 import { useState } from 'react';
 
@@ -16,9 +16,16 @@ function App() {
   const [success, setSuccess] = useState('')
   const [error, setError] = useState('');
   const [registered, setRegistered] = useState(false)
+  const [name, setName] = useState('')
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+
+
+  const handleNameBlur = event => {
+    setName(event.target.value)
+  }
 
   const handleEmailBlur = (event) => {
     setEmail(event.target.value)
@@ -75,9 +82,9 @@ function App() {
           const user = userCredential.user;
           setSuccess("Register Success")
           console.log(user)
-          // register button e click korle input field empty hoye jabe
-
           verifyEmail();
+
+          setUserName();
 
         })
         .catch(error => {
@@ -96,13 +103,26 @@ function App() {
       .then(() => {
         console.log("Password reset email sent!")
       })
-
   }
-  const verifyEmail = () => {
+
+  const setUserName = () => {
+    updateProfile(auth.currentUser, {
+      displayName: name
+    })
+      .then(() => {
+        console.log('updating name')
+      })
+      .catch(error => {
+        setError(error.message)
+      })
+  }
+
+
+  function verifyEmail() {
     sendEmailVerification(auth.currentUser)
       .then(() => {
         console.log("Email verification sent!");
-      })
+      });
 
   }
 
@@ -112,6 +132,15 @@ function App() {
       <div className='registration w-50 mx-auto mt-5'>
         <h2 className='text-primary'>Please {registered ? "Login" : "Register"}</h2>
         <Form noValidate validated={validated} onSubmit={handleFormSubmit}>
+
+          {!registered && <Form.Group className="mb-3" controlId="formBasicName">
+            <Form.Label>Your Name</Form.Label>
+            <Form.Control onBlur={handleNameBlur} type="text" placeholder="Your Name" required />
+            <Form.Control.Feedback type="invalid">
+              Please provide a your name.
+            </Form.Control.Feedback>
+          </Form.Group>}
+
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email address</Form.Label>
             <Form.Control onBlur={handleEmailBlur} type="email" placeholder="Enter email" required />
@@ -129,7 +158,6 @@ function App() {
             <Form.Control.Feedback type="invalid">
               Please provide a valid password.
             </Form.Control.Feedback>
-
           </Form.Group>
 
           <Form.Check onChange={handleRegisteredChange} type="checkbox" label="Already registered?" />
