@@ -13,6 +13,7 @@ const auth = getAuth(app)
 
 function App() {
   const [validated, setValidated] = useState(false);
+  const [success, setSuccess] = useState('')
   const [error, setError] = useState('');
   const [registered, setRegistered] = useState(false)
   const [email, setEmail] = useState('')
@@ -55,11 +56,11 @@ function App() {
 
     // jodi user age thekei registered thake taile login hobe
     if (registered) {
-      console.log(email, password);
       signInWithEmailAndPassword(auth, email, password)
         .then(result => {
-          const user = result.user
+          const user = result.user;
           console.log(user)
+          setSuccess('Login Success')
         })
         .catch(error => {
           console.error(error);
@@ -72,6 +73,7 @@ function App() {
       createUserWithEmailAndPassword(auth, email, password)
         .then(userCredential => {
           const user = userCredential.user;
+          setSuccess("Register Success")
           console.log(user)
           // register button e click korle input field empty hoye jabe
 
@@ -133,6 +135,7 @@ function App() {
           <Form.Check onChange={handleRegisteredChange} type="checkbox" label="Already registered?" />
 
           <p className='text-danger'>{error}</p>
+          <p className='text-success'>{success}</p>
 
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
           </Form.Group>
